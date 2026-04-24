@@ -1,5 +1,6 @@
+import json
 import os
-from typing import Optional
+from typing import Any, Iterator, Optional
 
 from google import genai
 from google.genai import types
@@ -51,23 +52,121 @@ def _parse_or_repair(
     bill_text: str,
     raw_json: str,
 ) -> Node:
+    """Validate Gemini's JSON, salvaging recoverable cases before retrying.
+
+    Gemini's recursive ``response_schema`` mode occasionally serializes
+    deeply-nested ``children`` entries as JSON-fragment strings instead of
+    objects (missing braces, sometimes missing the opening quote on the
+    first key). We try three rescues in order:
+
+    1. Validate as-is.
+    2. Salvage: parse the JSON, coerce string-children to objects where
+       possible, drop anything irrecoverable.
+    3. One repair call to Gemini — *without* the recursive schema (which
+       is what tripped it up) and *without* the full document (which just
+       re-triggers the same bug). JSON-only repair instructions.
+    """
     try:
         return Node.model_validate_json(raw_json)
     except ValidationError as first_error:
+        salvaged = _salvage_node(raw_json)
+        if salvaged is not None:
+            return salvaged
+
+        repair_config = types.GenerateContentConfig(
+            system_instruction=EXTRACTION_SYSTEM_PROMPT,
+            response_mime_type="application/json",
+        )
         repair_contents = (
-            f"The previous JSON you returned failed validation.\n\n"
+            "The JSON you previously returned failed validation. Return a "
+            "corrected JSON object that conforms to the same Node schema "
+            "described in the system prompt. Every entry inside any "
+            "'children' array MUST be a JSON OBJECT with keys (name, "
+            "amount, type, summary, affects, children) — never a string, "
+            "never a fragment. Do not include prose, markdown, or code "
+            "fences.\n\n"
             f"Validation errors:\n{first_error}\n\n"
-            f"The invalid JSON was:\n{raw_json}\n\n"
-            f"The original document is below. Return a corrected JSON object that conforms "
-            f"to the schema. Do not include prose, markdown, or code fences.\n\n"
-            f"--- DOCUMENT ---\n{bill_text}"
+            f"Invalid JSON:\n{raw_json}"
         )
         repair = client.models.generate_content(
             model=MODEL,
             contents=repair_contents,
-            config=config,
+            config=repair_config,
         )
-        return Node.model_validate_json(repair.text)
+        repair_text = repair.text or ""
+        try:
+            return Node.model_validate_json(repair_text)
+        except ValidationError:
+            salvaged = _salvage_node(repair_text)
+            if salvaged is not None:
+                return salvaged
+            raise
+
+
+def _salvage_node(raw_json: str) -> Optional[Node]:
+    """Best-effort recovery from common Gemini structured-output mistakes."""
+    if not raw_json:
+        return None
+    try:
+        data = json.loads(raw_json)
+    except (json.JSONDecodeError, TypeError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    cleaned = _clean_tree(data)
+    if cleaned is None:
+        return None
+    try:
+        return Node.model_validate(cleaned)
+    except ValidationError:
+        return None
+
+
+def _clean_tree(node: Any) -> Optional[dict]:
+    if not isinstance(node, dict):
+        return None
+    raw_kids = node.get("children")
+    new_kids: list[dict] = []
+    if isinstance(raw_kids, list):
+        for kid in raw_kids:
+            recovered = _coerce_child(kid)
+            if recovered is None:
+                continue
+            cleaned = _clean_tree(recovered)
+            if cleaned is not None:
+                new_kids.append(cleaned)
+    node["children"] = new_kids
+    return node
+
+
+def _coerce_child(value: Any) -> Optional[dict]:
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, str):
+        for candidate in _object_candidates(value):
+            try:
+                obj = json.loads(candidate)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(obj, dict):
+                return obj
+    return None
+
+
+def _object_candidates(s: str) -> Iterator[str]:
+    """Yield string variants likely to parse as a JSON object.
+
+    Covers the three patterns we've seen Gemini emit when it stringifies
+    a recursive child:
+        '{"name": ..., "children": []}'   → as-is
+        '"name": ..., "children": []'     → wrap in {}
+        'name": ..., "children": []'      → leading `"` eaten, prepend `{"`
+    """
+    s = s.strip().rstrip(",")
+    yield s
+    yield "{" + s + "}"
+    yield '{"' + s + "}"
+    yield '{"' + s
 
 
 def _truncate_depth(node: Node, depth: int = 1) -> None:

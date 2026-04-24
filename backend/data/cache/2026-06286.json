@@ -1,0 +1,57 @@
+{
+  "name": "Addressing DEI Discrimination by Federal Contractors",
+  "amount": null,
+  "type": "new",
+  "summary": "This Executive Order aims to promote economy and efficiency in Federal contracting by preventing racial discrimination, specifically by prohibiting 'racially discriminatory DEI activities' among federal contractors and their subcontractors.",
+  "affects": "Federal contractors, subcontractors, and federal agencies",
+  "children": [
+    {
+      "name": "Policy and Purpose",
+      "amount": null,
+      "type": "neutral",
+      "summary": "The Administration seeks to end racial discrimination, including certain 'diversity, equity, and inclusion' (DEI) activities that treat individuals differently based on race or ethnicity, as these activities are deemed unethical, illegal, and costly for federal contractors.",
+      "affects": "Federal contracting policy",
+      "children": []
+    },
+    {
+      "name": "Definitions",
+      "amount": null,
+      "type": "neutral",
+      "summary": "This section defines 'racially discriminatory DEI activities' as disparate treatment based on race or ethnicity in areas like recruitment, employment, contracting, or program participation, and clarifies what 'program participation' entails.",
+      "affects": "Federal contractors and agencies interpreting the order",
+      "children": []
+    },
+    {
+      "name": "Requirements for Federal Contractors",
+      "amount": null,
+      "type": "new",
+      "summary": "Within 30 days, federal agencies must include a clause in contracts requiring contractors and subcontractors to refrain from racially discriminatory DEI activities, provide compliance information, and face penalties for noncompliance.",
+      "affects": "Federal contractors and subcontractors",
+      "children": []
+    },
+    {
+      "name": "Penalties and Enforcement",
+      "amount": null,
+      "type": "new",
+      "summary": "This section outlines how non-compliance will be handled, including contract cancellation, debarment, agency reviews, and potential False Claims Act actions.",
+      "affects": "Federal agencies, contractors, and subcontractors",
+      "children": []
+    },
+    {
+      "name": "Regulations and Implementation",
+      "amount": null,
+      "type": "new",
+      "summary": "The Federal Acquisition Regulatory Council (FAR Council) is directed to amend the Federal Acquisition Regulation (FAR) to include the new contract clause and remove conflicting provisions, and to issue interim guidance.",
+      "affects": "Federal Acquisition Regulatory Council, federal agencies, and contractors",
+      "children": []
+    },
+    {
+      "name": "General Provisions",
+      "amount": null,
+      "type": "neutral",
+      "summary": "This section includes standard legal provisions regarding the severability of the order's parts, non-impairment of agency authority, implementation subject to appropriations, and clarification that the order does not create private rights.",
+      "affects": "All parties involved in interpreting and implementing the order",
+      "children": []
+    }
+  ]
+}

@@ -19,14 +19,21 @@ from __future__ import annotations
 import sys
 import traceback
 
-from backend.bills import (
+from dotenv import load_dotenv
+
+# Load .env before importing the LLM module (which reads GEMINI_API_KEY).
+# Looks in CWD first, then walks up — so it works whether you run from
+# the repo root or from inside backend/.
+load_dotenv()
+
+from backend.bills import (  # noqa: E402  (import after load_dotenv)
     BILLS_DIR,
     list_bills,
     load_bill_text,
     save_cached_hierarchy,
 )
-from backend.llm import extract_hierarchy
-from backend.models import Node
+from backend.llm import extract_hierarchy  # noqa: E402
+from backend.models import Node  # noqa: E402
 
 
 def _stats(node: Node) -> tuple[int, int, float]:
