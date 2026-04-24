@@ -1,3 +1,14 @@
+# Frontend
+frontend/my-react-app/node_modules/
+frontend/my-react-app/dist/
+frontend/my-react-app/build/
+frontend/my-react-app/dist-ssr/
+frontend/my-react-app/*.local
+frontend/my-react-app/.vscode/
+frontend/my-react-app/.idea/
+frontend/my-react-app/.DS_Store/
+frontend/my-react-app/.env/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
