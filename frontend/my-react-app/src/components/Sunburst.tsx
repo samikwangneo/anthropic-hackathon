@@ -95,7 +95,8 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
         .style('stroke', '#000')
         .style('stroke-width', '2px')
         .attr('fill-opacity', 1);
-        
+
+      updateCenterText(d, true);
       onHover(d.data, event.clientX, event.clientY);
     })
     .on('mouseleave', (event, d) => {
@@ -103,13 +104,14 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
         .style('stroke', '#fff')
         .style('stroke-width', '0.5px')
         .attr('fill-opacity', arcVisible(d.current || d) ? (d.children ? 0.8 : 0.6) : 0);
-        
+
+      updateCenterText(currentFocus);
       onHover(null, 0, 0);
     });
 
     const format = d3.format(',d');
     path.append('title')
-      .text(d => `${d.ancestors().map(d => d.data.name).reverse().join('/')}\n${d.value ? format(d.value) : ''}`);
+      .text(d => `${d.ancestors().map(d => d.data.name).reverse().join(' › ')}\n${d.value ? format(d.value) : ''}`);
 
     const label = svg.append('g')
       .attr('pointer-events', 'none')
@@ -121,63 +123,146 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
       .attr('dy', '0.35em')
       .attr('fill-opacity', d => +labelVisible(d.current || d))
       .attr('transform', d => labelTransform(d.current || d))
-      .text(d => d.data.name.length > 20 ? d.data.name.slice(0, 20) + '...' : d.data.name)
-      .style('fill', '#1f2937') // Dark text for contrast
-      .style('font-weight', '500')
-      .style('font-family', 'var(--font-primary)');
+      .text(d => labelText(d))
+      .style('fill', '#0f172a')
+      .style('font-weight', '600')
+      .style('font-family', 'var(--font-primary)')
+      .style('font-size', '11px')
+      .style('paint-order', 'stroke')
+      .style('stroke', 'rgba(255,255,255,0.55)')
+      .style('stroke-width', '3px');
 
     const parent = svg.append('circle')
       .datum(root)
       .attr('r', radius)
-      .attr('fill', 'none')
+      .attr('fill', 'rgba(255,255,255,0.02)')
       .attr('pointer-events', 'all')
+      .style('cursor', 'pointer')
       .on('click', clicked);
 
-    // Center text showing current root
-    const centerText = svg.append('text')
+    // Center text — three lines: name (top), category/amount badge, plain-language summary.
+    const centerName = svg.append('text')
       .attr('text-anchor', 'middle')
-      .attr('dy', '0em')
+      .attr('dy', '-1.6em')
       .style('pointer-events', 'none')
       .style('font-family', 'var(--font-primary)')
-      .style('fill', 'var(--text-main)')
+      .style('fill', 'rgb(244 244 245)')
       .style('font-size', '14px')
-      .style('font-weight', '600');
-    
-    const centerSubText = svg.append('text')
+      .style('font-weight', '700');
+
+    const centerBadge = svg.append('text')
       .attr('text-anchor', 'middle')
-      .attr('dy', '1.5em')
+      .attr('dy', '-0.1em')
       .style('pointer-events', 'none')
       .style('font-family', 'var(--font-secondary)')
-      .style('fill', 'var(--text-muted)')
-      .style('font-size', '12px');
+      .style('text-transform', 'uppercase')
+      .style('letter-spacing', '0.15em')
+      .style('font-size', '10px')
+      .style('font-weight', '700');
 
-    function updateCenterText(p: d3.HierarchyRectangularNode<Node>) {
-      const name = p.data.name;
-      centerText.text(name.length > 25 ? name.slice(0, 25) + '...' : name);
-      
-      const total = p.value || 0;
-      if (p.data.amount !== null || total > 0) {
-        centerSubText.text(total > 1000000 ? `$${(total/1000000).toFixed(1)}M` : total.toString());
-      } else {
-        centerSubText.text('');
-      }
+    // Summary wraps onto multiple lines (up to 4).
+    const centerSummary = svg.append('g')
+      .style('pointer-events', 'none');
+
+    function setSummaryLines(text: string) {
+      centerSummary.selectAll('text').remove();
+      const lines = wrapLines(text, 28, 4);
+      const startDy = 1.3;
+      lines.forEach((line, i) => {
+        centerSummary.append('text')
+          .attr('text-anchor', 'middle')
+          .attr('dy', `${startDy + i * 1.15}em`)
+          .style('font-family', 'var(--font-secondary)')
+          .style('fill', 'rgba(228, 228, 231, 0.75)')
+          .style('font-size', '11px')
+          .text(line);
+      });
     }
-    
+
+    function updateCenterText(
+      p: d3.HierarchyRectangularNode<Node>,
+      hovering = false,
+    ) {
+      const name = p.data.name;
+      centerName.text(name.length > 32 ? name.slice(0, 32) + '…' : name);
+
+      const total = p.value || 0;
+      const hasAmount = p.data.amount !== null && p.data.amount !== undefined;
+      const dollarLabel = hasAmount
+        ? formatAmount(p.data.amount as number)
+        : total > 0
+        ? `${format(total)} ${total === 1 ? 'clause' : 'clauses'}`
+        : '';
+
+      const typeLabel = p.data.type?.toUpperCase() ?? 'NEUTRAL';
+      const typeColor = colorMap[p.data.type] || colorMap.neutral;
+      const badgePrefix = hovering ? '◉ ' : '';
+      const badgeText = dollarLabel
+        ? `${badgePrefix}${typeLabel} · ${dollarLabel}`
+        : `${badgePrefix}${typeLabel}`;
+      centerBadge.text(badgeText).style('fill', typeColor);
+
+      setSummaryLines(p.data.summary || '');
+    }
+
     updateCenterText(root);
 
-    // Tween functions
     function arcVisible(d: any) {
       return d.y1 <= 4 && d.y0 >= 1 && d.x1 > d.x0;
     }
 
     function labelVisible(d: any) {
-      return d.y1 <= 4 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.05;
+      return d.y1 <= 4 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
+    }
+
+    function labelText(d: d3.HierarchyRectangularNode<Node>) {
+      // Tighter labels for inner rings, more room for outer rings.
+      const angularSpan = d.x1 - d.x0;
+      const maxChars = Math.max(8, Math.floor(angularSpan * 24));
+      const name = d.data.name;
+      return name.length > maxChars ? name.slice(0, maxChars - 1) + '…' : name;
     }
 
     function labelTransform(d: any) {
       const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
       const y = (d.y0 + d.y1) / 2 * radius;
       return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
+    }
+
+    function wrapLines(text: string, maxChars: number, maxLines: number): string[] {
+      const words = text.split(/\s+/).filter(Boolean);
+      const lines: string[] = [];
+      let current = '';
+      for (const word of words) {
+        const candidate = current ? `${current} ${word}` : word;
+        if (candidate.length > maxChars && current) {
+          lines.push(current);
+          current = word;
+          if (lines.length === maxLines - 1) break;
+        } else {
+          current = candidate;
+        }
+      }
+      if (current && lines.length < maxLines) lines.push(current);
+      // If there's leftover text we couldn't fit, ellipsize the last line.
+      if (lines.length === maxLines) {
+        const remaining = words.slice(
+          lines.join(' ').split(/\s+/).filter(Boolean).length,
+        );
+        if (remaining.length > 0) {
+          const last = lines[maxLines - 1];
+          lines[maxLines - 1] =
+            last.length > maxChars - 1 ? last.slice(0, maxChars - 1) + '…' : last + '…';
+        }
+      }
+      return lines;
+    }
+
+    function formatAmount(amount: number): string {
+      if (Math.abs(amount) >= 1_000_000_000) return `$${(amount / 1_000_000_000).toFixed(1)}B`;
+      if (Math.abs(amount) >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
+      if (Math.abs(amount) >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
+      return `$${amount.toLocaleString()}`;
     }
 
     function leafClicked(event: any, p: d3.HierarchyRectangularNode<Node>) {

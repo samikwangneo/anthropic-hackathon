@@ -31,17 +31,23 @@ def _get_client() -> genai.Client:
 
 def extract_hierarchy(bill_text: str) -> Node:
     client = _get_client()
+    # NOTE: We intentionally do NOT pass ``response_schema=Node`` here.
+    # Gemini's structured-output mode mishandles recursive Pydantic
+    # schemas at depth (it serializes deeply-nested children as JSON-
+    # fragment strings), which both crashes validation and forces the
+    # salvage layer to drop subtrees. Plain JSON mode + the explicit
+    # shape in EXTRACTION_SYSTEM_PROMPT yields richer, well-formed
+    # trees for recursive types.
     config = types.GenerateContentConfig(
         system_instruction=EXTRACTION_SYSTEM_PROMPT,
         response_mime_type="application/json",
-        response_schema=Node,
     )
     response = client.models.generate_content(
         model=MODEL,
         contents=bill_text,
         config=config,
     )
-    node = _parse_or_repair(client, config, bill_text, response.text)
+    node = _parse_or_repair(client, config, bill_text, response.text or "")
     _truncate_depth(node)
     return node
 

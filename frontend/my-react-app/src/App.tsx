@@ -11,25 +11,40 @@ function App() {
   const [bills, setBills] = useState<BillMeta[]>([]);
   const [selectedBillId, setSelectedBillId] = useState<string | null>(null);
   const [hierarchy, setHierarchy] = useState<Node | null>(null);
-  
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   const [hoverNode, setHoverNode] = useState<{ node: Node | null, x: number, y: number }>({
     node: null, x: 0, y: 0
   });
-  
+
   const [selectedNode, setSelectedNode] = useState<{ node: Node, path: string[] } | null>(null);
 
   useEffect(() => {
-    api.getBills().then(setBills).catch(console.error);
+    api.getBills()
+      .then(b => {
+        setBills(b);
+        setFetchError(null);
+      })
+      .catch(err => {
+        console.error(err);
+        setFetchError(`Could not load bills: ${err.message ?? err}`);
+      });
   }, []);
 
   useEffect(() => {
     if (selectedBillId) {
       setHierarchy(null);
+      setFetchError(null);
       api.getHierarchy(selectedBillId)
         .then(setHierarchy)
-        .catch(console.error);
+        .catch(err => {
+          console.error(err);
+          setFetchError(`Could not load hierarchy: ${err.message ?? err}`);
+        });
     }
   }, [selectedBillId]);
+
+  const selectedBill = bills.find(b => b.id === selectedBillId) ?? null;
 
   return (
     <div className="min-h-screen bg-[#090a0f] text-zinc-100 overflow-hidden flex flex-col font-primary selection:bg-teal-500/30 selection:text-teal-200 relative">
@@ -93,13 +108,26 @@ function App() {
 
         {/* Visualization Canvas */}
         <div className="flex-1 relative flex items-center justify-center p-8 mt-20">
-          {!selectedBillId ? (
+          {fetchError ? (
+            <div className="max-w-lg text-center bg-red-500/10 border border-red-500/30 text-red-300 px-6 py-5 rounded-xl font-secondary">
+              <div className="text-xs uppercase tracking-widest font-bold mb-2 text-red-400">Backend unreachable</div>
+              <div className="text-sm break-words mb-3">{fetchError}</div>
+              <div className="text-xs text-red-400/70">
+                Is the backend running? Try <code className="bg-black/30 px-1 py-0.5 rounded">python run.py</code> at the repo root.
+              </div>
+            </div>
+          ) : !selectedBillId ? (
             <div className="flex flex-col items-center justify-center text-center opacity-50 animation-fade-in">
               <LayoutGrid size={64} strokeWidth={1} className="mb-6 text-teal-500/50" />
               <h2 className="text-3xl font-light mb-2">Select a bill to map its impact</h2>
               <p className="text-zinc-400 font-secondary max-w-md">
                 PolicyMap transforms raw legislative text into an interactive, zoomable sunburst detailing policy shifts and budget allocations.
               </p>
+              {bills.length > 0 && (
+                <div className="mt-6 text-xs text-zinc-500 font-secondary uppercase tracking-widest">
+                  {bills.length} {bills.length === 1 ? 'bill' : 'bills'} loaded from backend
+                </div>
+              )}
             </div>
           ) : !hierarchy ? (
             <div className="flex items-center gap-4 text-teal-400 animate-pulse font-secondary uppercase tracking-widest text-sm font-bold">
@@ -107,12 +135,27 @@ function App() {
               Parsing Legal Hierarchy...
             </div>
           ) : (
-            <div className="w-full h-full max-h-[800px] max-w-[800px] animation-zoom-in">
-              <Sunburst 
-                data={hierarchy} 
-                onHover={(node, x, y) => setHoverNode({ node, x, y })}
-                onClick={(node, path) => setSelectedNode({ node, path })}
-              />
+            <div className="w-full h-full flex flex-col items-center gap-4">
+              {selectedBill && (
+                <div className="text-center max-w-2xl px-4">
+                  <div className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-1">
+                    Now mapping
+                  </div>
+                  <div className="text-zinc-300 font-secondary text-sm leading-snug">
+                    {selectedBill.description}
+                  </div>
+                  <div className="mt-2 text-xs text-zinc-500 font-secondary">
+                    Click any arc to zoom · Click center to zoom out · Hover for details
+                  </div>
+                </div>
+              )}
+              <div className="w-full max-h-[700px] max-w-[700px] flex-1 animation-zoom-in">
+                <Sunburst
+                  data={hierarchy}
+                  onHover={(node, x, y) => setHoverNode({ node, x, y })}
+                  onClick={(node, path) => setSelectedNode({ node, path })}
+                />
+              </div>
             </div>
           )}
         </div>

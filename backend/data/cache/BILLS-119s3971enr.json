@@ -1,17 +1,378 @@
 {
   "name": "Small Business Innovation and Economic Security Act",
   "amount": null,
-  "type": "neutral",
-  "summary": "This act extends the authorization for the Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) programs, and implements various measures to enhance research security, improve funding mechanisms, reduce administrative burden, and strengthen data collection.",
-  "affects": "Small business concerns, federal agencies administering SBIR/STTR programs, the U.S. innovation ecosystem, and national security.",
+  "type": "new",
+  "summary": "This act extends the Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) programs and introduces new measures to enhance research security, streamline funding, and improve administrative processes.",
+  "affects": "Small businesses participating in federal research and development programs, federal agencies, and the U.S. national security apparatus.",
   "children": [
     {
-      "name": "Extension of SBIR and STTR Programs",
+      "name": "Bolstering Research Security of SBIR and STTR Awards",
+      "amount": null,
+      "type": "new",
+      "summary": "This section introduces new requirements for federal agencies to evaluate security risks associated with small businesses applying for SBIR and STTR awards, including ties to foreign entities on various watchlists.",
+      "affects": "Small businesses applying for SBIR and STTR awards, federal agencies awarding these contracts, and national security interests.",
+      "children": [
+        {
+          "name": "SBIR Security Risk Evaluation and Denial Criteria",
+          "amount": null,
+          "type": "new",
+          "summary": "Federal agencies must now evaluate security risks for SBIR applicants, including due diligence, disclosures, and coordination with intelligence and law enforcement. Awards can be denied if a small business has connections to entities or individuals on specified government watchlists.",
+          "affects": "Small businesses seeking SBIR awards and federal agencies administering the SBIR program.",
+          "children": []
+        },
+        {
+          "name": "STTR Security Risk Evaluation and Denial Criteria",
+          "amount": null,
+          "type": "new",
+          "summary": "Similar to SBIR, federal agencies must evaluate security risks for STTR applicants, including potential foreign risks and connections to entities or individuals on government watchlists, allowing for denial of awards.",
+          "affects": "Small businesses seeking STTR awards and federal agencies administering the STTR program.",
+          "children": []
+        },
+        {
+          "name": "Applicant Notification and Eligibility Policy",
+          "amount": null,
+          "type": "new",
+          "summary": "Agencies must establish a process to notify small businesses if their application is denied due to a security risk, providing the basis for the decision without compromising national security. The policy also clarifies that a denial does not prohibit eligibility in future award cycles.",
+          "affects": "Small businesses whose SBIR or STTR applications are denied based on security risk.",
+          "children": []
+        },
+        {
+          "name": "Enhanced Due Diligence Requirements",
+          "amount": null,
+          "type": "increase",
+          "summary": "The due diligence process for assessing small businesses will be expanded to include cybersecurity practices, patent and employee analysis, foreign ownership, financial ties, foreign affiliations, investment relationships, and technology licensing agreements.",
+          "affects": "Small businesses applying for SBIR/STTR awards and federal agencies conducting due diligence.",
+          "children": []
+        },
+        {
+          "name": "GAO Study Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The mandated Government Accountability Office (GAO) study on the SBIR and STTR Extension Act of 2022 is extended from 3 years to 8 years.",
+          "affects": "The Government Accountability Office and Congress overseeing SBIR/STTR programs.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "Phase II Strategic Breakthrough Funding",
+      "amount": null,
+      "type": "new",
+      "summary": "This section creates a new 'strategic breakthrough allocation' within the SBIR program to provide larger awards for critical technologies that advance national security, with specific matching fund requirements and streamlined contracting.",
+      "affects": "Small businesses developing critical technologies, federal agencies with large research budgets, and U.S. national security.",
+      "children": [
+        {
+          "name": "Strategic Breakthrough Allocation for Large Awards",
+          "amount": null,
+          "type": "new",
+          "summary": "Federal agencies with over $100,000,000 in SBIR expenditures can allocate up to 0.50% of their extramural research budget for strategic breakthrough awards of up to $30,000,000 for Phase II projects. These awards have specific eligibility and matching fund requirements.",
+          "affects": "Small businesses with prior Phase II awards and federal agencies needing critical technologies.",
+          "children": []
+        },
+        {
+          "name": "Commercialization Readiness Program Integration",
+          "amount": null,
+          "type": "increase",
+          "summary": "The commercialization readiness program is updated to include small businesses receiving strategic breakthrough awards and to ensure these research programs are analyzed in federal budget planning.",
+          "affects": "Small businesses in the commercialization readiness program and federal agencies' budgeting processes.",
+          "children": []
+        },
+        {
+          "name": "Congressional Briefings on Funding Authority",
+          "amount": null,
+          "type": "new",
+          "summary": "Federal agencies eligible for strategic breakthrough allocations must brief congressional committees on their plans to use or not use this new funding authority, and provide recurring updates if they opt to use it.",
+          "affects": "Federal agencies and congressional oversight committees.",
+          "children": []
+        },
+        {
+          "name": "Termination Clause for Strategic Breakthrough Funding",
+          "amount": null,
+          "type": "cut",
+          "summary": "The provisions related to Phase II strategic breakthrough funding and associated amendments will terminate on September 30, 2031.",
+          "affects": "Federal agencies and small businesses utilizing this specific funding mechanism after 2031.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "Reducing Administrative Burden",
+      "amount": null,
+      "type": "new",
+      "summary": "This section aims to reduce administrative burden by allowing federal agencies to set limits on the number of proposals a small business can submit for SBIR/STTR solicitations, while also providing a waiver process for urgent topics.",
+      "affects": "Small businesses applying for SBIR/STTR awards and federal agencies managing the programs.",
+      "children": [
+        {
+          "name": "Limits on Proposal Submissions",
+          "amount": null,
+          "type": "new",
+          "summary": "Beginning in fiscal year 2027, each federal agency must establish a limit on the maximum number of Phase I and Phase II proposals a small business can submit in a fiscal year, using a fiscal year, solicitation, or topic-based method.",
+          "affects": "Small businesses submitting proposals to federal SBIR/STTR programs.",
+          "children": []
+        },
+        {
+          "name": "Waiver Process for Proposal Limits",
+          "amount": null,
+          "type": "neutral",
+          "summary": "A waiver process is established to allow agencies to exceed proposal limits for time-sensitive and urgent topics, requiring written justification and approval, but limited to 5 percent of topics per fiscal year.",
+          "affects": "Federal agencies and small businesses applying for urgent SBIR/STTR topics.",
+          "children": []
+        },
+        {
+          "name": "Reporting on Proposal Limits and Waivers",
+          "amount": null,
+          "type": "new",
+          "summary": "Federal agencies must report to Congress on the methodology for setting proposal limits and the impact on small businesses, as well as provide written notification for each waiver granted.",
+          "affects": "Federal agencies and congressional oversight committees.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "Phase III Award Education",
+      "amount": null,
+      "type": "new",
+      "summary": "This section enhances understanding and utilization of Phase III awards by defining the acquisition workforce and mandating training activities for federal contracting officers and acquisition personnel.",
+      "affects": "Federal acquisition workforce, contracting officers, and small businesses seeking Phase III awards.",
+      "children": [
+        {
+          "name": "Definition of Agency Acquisition Workforce",
+          "amount": null,
+          "type": "neutral",
+          "summary": "A new definition is added for 'agency acquisition workforce' to include employees with procurement or acquisition responsibilities within federal agencies, as well as individuals in the acquisition workforce under Title 10.",
+          "affects": "Federal agencies and their acquisition personnel.",
+          "children": []
+        },
+        {
+          "name": "Mandatory Workforce Training on Phase III Awards",
+          "amount": null,
+          "type": "new",
+          "summary": "The Administrator, in coordination with other federal agencies, must establish training for contracting officers and the acquisition workforce on Phase III awards, including missions, goals, data rights, and sole source contracts.",
+          "affects": "Federal contracting officers and acquisition workforce.",
+          "children": []
+        },
+        {
+          "name": "Funding for Training Activities",
+          "amount": null,
+          "type": "neutral",
+          "summary": "The training activities for Phase III awards can be carried out using existing funds made available for SBIR/STTR commercialization and administrative assistance programs.",
+          "affects": "Federal agencies administering SBIR/STTR programs.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "Phase III Improvements",
       "amount": null,
       "type": "increase",
-      "summary": "Extends the authorization for the Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) programs and associated pilot programs until September 30, 2031, allowing federal agencies to continue these programs.",
-      "affects": "Small businesses, federal agencies, and the U.S. research and development ecosystem.",
-      "children": []
+      "summary": "This section improves the transition of SBIR/STTR technologies to Phase III by empowering Procurement Center Representatives and requiring standardized procedures and contracts for Phase I, II, and III awards.",
+      "affects": "Small businesses seeking Phase III awards and federal procurement processes.",
+      "children": [
+        {
+          "name": "Procurement Center Representative Directives",
+          "amount": null,
+          "type": "increase",
+          "summary": "Procurement Center Representatives are now required to advocate for the maximum practical use and transition of SBIR/STTR products and services to Phase III through awards to small businesses.",
+          "affects": "Federal Procurement Center Representatives and small businesses transitioning to Phase III.",
+          "children": []
+        },
+        {
+          "name": "Phase III Award Simplification",
+          "amount": null,
+          "type": "new",
+          "summary": "Federal agencies must develop simplified and standardized procedures and model contracts for all SBIR award phases (I, II, and III), and issue standardized solicitation provisions and contract clauses for Phase III eligibility.",
+          "affects": "Small businesses participating in SBIR/STTR programs and federal agencies' contracting processes.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "Technical and Business Assistance Improvements",
+      "amount": null,
+      "type": "increase",
+      "summary": "This section expands the scope of technical and business assistance (TBA) for SBIR/STTR recipients, increases funding limits, adds cybersecurity and foreign involvement screening, and integrates participation in I-Corps programs.",
+      "affects": "Small businesses receiving SBIR/STTR awards and federal agencies offering TBA.",
+      "children": [
+        {
+          "name": "Expansion of Technical and Business Assistance (TBA)",
+          "amount": null,
+          "type": "increase",
+          "summary": "Recipients of SBIR/STTR awards are now authorized to select TBA, which expands to include cybersecurity assistance and screening for potential foreign involvement. Funding limits for TBA are increased to $6,500 for Phase I and $50,000 for Phase II.",
+          "affects": "Small businesses receiving SBIR/STTR awards.",
+          "children": []
+        },
+        {
+          "name": "Eligible Uses of TBA Funds",
+          "amount": null,
+          "type": "new",
+          "summary": "Small businesses can now use TBA funding to hire new staff, augment existing staff, or direct staff to conduct or participate in training activities consistent with program goals.",
+          "affects": "Small businesses receiving SBIR/STTR awards.",
+          "children": []
+        },
+        {
+          "name": "I-Corps Participation for SBIR/STTR Recipients",
+          "amount": null,
+          "type": "new",
+          "summary": "Federal agencies with an I-Corps program must offer SBIR/STTR award recipients the option to participate in I-Corps training, and recipients can use authorized TBA funds for participation.",
+          "affects": "Small businesses receiving SBIR/STTR awards and federal agencies with I-Corps programs.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "Improving SBIR and STTR Data Collection",
+      "amount": null,
+      "type": "increase",
+      "summary": "This section mandates additional data fields for the SBIR database and updates the Federal Procurement Data System to better track various types of SBIR/STTR awards and their follow-on contracts.",
+      "affects": "Federal agencies collecting SBIR/STTR data and small businesses whose awards are tracked.",
+      "children": [
+        {
+          "name": "Additional Data Fields in SBIR Database",
+          "amount": null,
+          "type": "increase",
+          "summary": "The SBIR database must now collect information on whether an award is classified as direct to Phase II, subsequent Phase II, a strategic breakthrough award, or a Phase III prime or subcontract award.",
+          "affects": "Federal agencies managing the SBIR database.",
+          "children": []
+        },
+        {
+          "name": "Improving Federal Procurement Data Systems Data Tracking",
+          "amount": null,
+          "type": "increase",
+          "summary": "The Federal Procurement Data System must be updated to require reporting on award classification (e.g., strategic breakthrough), whether a contract is designated as Phase III, if non-SBIR contracts use SBIR/STTR technology, and to link follow-on contracts to prior SBIR/STTR identification numbers.",
+          "affects": "The Administrator of General Services, government contracting officers, and federal agencies.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "Extending SBIR and STTR Authorization",
+      "amount": null,
+      "type": "increase",
+      "summary": "This section extends the authorization for both the SBIR and STTR programs until September 30, 2031, allowing federal agencies to carry over unspent funds.",
+      "affects": "Small businesses participating in SBIR/STTR programs and federal agencies.",
+      "children": [
+        {
+          "name": "SBIR and STTR Program Authorization Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The authorization for the SBIR and STTR programs is extended from September 30, 2025, to September 30, 2031.",
+          "affects": "Small businesses and federal agencies involved in the SBIR/STTR programs.",
+          "children": []
+        },
+        {
+          "name": "Carry Over Funds Provision",
+          "amount": null,
+          "type": "increase",
+          "summary": "Federal agencies participating in the SBIR/STTR programs may use unspent funds from fiscal year 2026 in fiscal year 2027.",
+          "affects": "Federal agencies managing SBIR/STTR budgets.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "Extension of SBIR and STTR Programs and Activities",
+      "amount": null,
+      "type": "increase",
+      "summary": "This section extends the authorization dates for various specific pilot programs and provisions related to the SBIR and STTR programs, generally from 2025 to 2031, and repeals a GAO mandate sunset.",
+      "affects": "Specific federal agencies and small businesses participating in the extended pilot programs and provisions.",
+      "children": [
+        {
+          "name": "Phase Flexibility Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The authority for Phase Flexibility for certain agencies and the Department of Energy, NASA, and Department of Education is extended until September 30, 2031, and expanded to include the STTR program.",
+          "affects": "Small businesses and specific federal agencies utilizing Phase Flexibility.",
+          "children": []
+        },
+        {
+          "name": "Commercialization Readiness Program for Civilian Agencies Pilot Program Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The pilot program for commercialization readiness for civilian agencies is extended until September 30, 2031.",
+          "affects": "Civilian federal agencies and small businesses in the pilot program.",
+          "children": []
+        },
+        {
+          "name": "Accelerated Awards Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The authority for accelerated awards is extended until September 30, 2031.",
+          "affects": "Federal agencies and small businesses utilizing accelerated awards.",
+          "children": []
+        },
+        {
+          "name": "Phase 0 Pilot Program Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The Phase 0 pilot program is extended until September 30, 2031.",
+          "affects": "Federal agencies and small businesses participating in the Phase 0 pilot program.",
+          "children": []
+        },
+        {
+          "name": "Administrative Assistance Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The provision for administrative assistance is extended until September 30, 2031.",
+          "affects": "Federal agencies providing administrative assistance to SBIR/STTR programs.",
+          "children": []
+        },
+        {
+          "name": "Increased Minimum Performance Standards Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The application of increased minimum performance standards is extended until September 30, 2031.",
+          "affects": "Small businesses and federal agencies subject to performance standards.",
+          "children": []
+        },
+        {
+          "name": "Commercialization Assistance Pilot Programs Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The commercialization assistance pilot programs are extended until September 30, 2031.",
+          "affects": "Federal agencies and small businesses in commercialization assistance pilot programs.",
+          "children": []
+        },
+        {
+          "name": "Due Diligence Program Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The due diligence program for SBIR/STTR awards is extended until September 30, 2031.",
+          "affects": "Federal agencies conducting due diligence and small businesses applying for awards.",
+          "children": []
+        },
+        {
+          "name": "STTR Participation of Military Research and Educational Institutions Pilot Program Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The pilot program for STTR participation of military research and educational institutions is extended until September 30, 2031.",
+          "affects": "Military research and educational institutions and small businesses participating in the pilot program.",
+          "children": []
+        },
+        {
+          "name": "Budget Calculation Pilot Program Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The budget calculation pilot program is extended until September 30, 2031.",
+          "affects": "Federal agencies involved in the budget calculation pilot program.",
+          "children": []
+        },
+        {
+          "name": "Special Operations Command Pilot Extension",
+          "amount": null,
+          "type": "increase",
+          "summary": "The Special Operations Command pilot program is extended until September 30, 2031.",
+          "affects": "U.S. Special Operations Command and participating entities.",
+          "children": []
+        },
+        {
+          "name": "GAO Mandate Sunset Repeal",
+          "amount": null,
+          "type": "repeal",
+          "summary": "Section 5142 of the National Defense Authorization Act for Fiscal Year 2012, which established a sunset for a Government Accountability Office mandate, is repealed.",
+          "affects": "The Government Accountability Office and Congress.",
+          "children": []
+        }
+      ]
     }
   ]
 }

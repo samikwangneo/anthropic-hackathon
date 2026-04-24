@@ -1,57 +1,214 @@
 {
   "name": "Addressing DEI Discrimination by Federal Contractors",
   "amount": null,
-  "type": "new",
-  "summary": "This Executive Order aims to promote economy and efficiency in Federal contracting by preventing racial discrimination, specifically by prohibiting 'racially discriminatory DEI activities' among federal contractors and their subcontractors.",
-  "affects": "Federal contractors, subcontractors, and federal agencies",
+  "type": "cut",
+  "summary": "This Executive Order prevents federal contractors and subcontractors from engaging in racially discriminatory diversity, equity, and inclusion (DEI) activities by requiring specific contract clauses and establishing enforcement mechanisms to promote economy and efficiency in federal contracting.",
+  "affects": "Federal contractors and subcontractors, and federal agencies involved in contracting",
   "children": [
     {
       "name": "Policy and Purpose",
       "amount": null,
-      "type": "neutral",
-      "summary": "The Administration seeks to end racial discrimination, including certain 'diversity, equity, and inclusion' (DEI) activities that treat individuals differently based on race or ethnicity, as these activities are deemed unethical, illegal, and costly for federal contractors.",
-      "affects": "Federal contracting policy",
+      "type": "cut",
+      "summary": "The Administration aims to end racial discrimination in society, including DEI activities that treat individuals differently based on race or ethnicity, deeming such practices unethical, illegal, inefficient, and costly for federal contracts.",
+      "affects": "Federal Government contracting practices and federal contractors",
       "children": []
     },
     {
       "name": "Definitions",
       "amount": null,
       "type": "neutral",
-      "summary": "This section defines 'racially discriminatory DEI activities' as disparate treatment based on race or ethnicity in areas like recruitment, employment, contracting, or program participation, and clarifies what 'program participation' entails.",
-      "affects": "Federal contractors and agencies interpreting the order",
-      "children": []
+      "summary": "This section defines 'racially discriminatory DEI activities' as disparate treatment based on race or ethnicity in various employment, contracting, or program participation contexts, and 'program participation' to include training, mentoring, and other opportunities.",
+      "affects": "Federal contractors and federal agencies implementing the order",
+      "children": [
+        {
+          "name": "Racially Discriminatory DEI Activities",
+          "amount": null,
+          "type": "neutral",
+          "summary": "Defines 'racially discriminatory DEI activities' as treating people differently based on race or ethnicity in areas like recruitment, employment, contracting, or resource allocation.",
+          "affects": "Federal contractors and subcontractors",
+          "children": []
+        },
+        {
+          "name": "Program Participation",
+          "amount": null,
+          "type": "neutral",
+          "summary": "Defines 'program participation' to include membership or access to training, mentoring, leadership development, educational opportunities, clubs, or associations sponsored by a contractor.",
+          "affects": "Federal contractors and their employees or participants",
+          "children": []
+        }
+      ]
     },
     {
       "name": "Requirements for Federal Contractors",
       "amount": null,
       "type": "new",
-      "summary": "Within 30 days, federal agencies must include a clause in contracts requiring contractors and subcontractors to refrain from racially discriminatory DEI activities, provide compliance information, and face penalties for noncompliance.",
+      "summary": "Federal agencies must include a specific clause in all contracts and subcontracts within 30 days, obligating contractors not to engage in racially discriminatory DEI activities and to comply with reporting and enforcement.",
       "affects": "Federal contractors and subcontractors",
-      "children": []
+      "children": [
+        {
+          "name": "Prohibition on Discriminatory DEI Activities",
+          "amount": null,
+          "type": "cut",
+          "summary": "Contractors must agree not to engage in racially discriminatory DEI activities as defined by the Executive Order.",
+          "affects": "Federal contractors and subcontractors",
+          "children": []
+        },
+        {
+          "name": "Information and Reporting",
+          "amount": null,
+          "type": "new",
+          "summary": "Contractors must furnish all required information, reports, and access to records to verify compliance with the clause.",
+          "affects": "Federal contractors and subcontractors",
+          "children": []
+        },
+        {
+          "name": "Noncompliance Penalties",
+          "amount": null,
+          "type": "new",
+          "summary": "Contracts may be canceled, terminated, or suspended, and the contractor declared ineligible for future government contracts, due to noncompliance.",
+          "affects": "Federal contractors and subcontractors",
+          "children": []
+        },
+        {
+          "name": "Subcontractor Violations Reporting",
+          "amount": null,
+          "type": "new",
+          "summary": "Contractors must report any known or reasonably knowable subcontractor conduct that violates the clause and take directed remedial actions.",
+          "affects": "Federal contractors managing subcontractors",
+          "children": []
+        },
+        {
+          "name": "Subcontractor Lawsuits Notification",
+          "amount": null,
+          "type": "new",
+          "summary": "Contractors must inform the contracting agency if a subcontractor sues them, challenging the validity of this clause.",
+          "affects": "Federal contractors involved in legal disputes with subcontractors",
+          "children": []
+        },
+        {
+          "name": "Compliance as Material to Payment",
+          "amount": null,
+          "type": "new",
+          "summary": "Compliance with the clause is considered material to government payment decisions, allowing for False Claims Act applicability.",
+          "affects": "Federal contractors subject to government payment decisions and the False Claims Act",
+          "children": []
+        }
+      ]
     },
     {
       "name": "Penalties and Enforcement",
       "amount": null,
       "type": "new",
-      "summary": "This section outlines how non-compliance will be handled, including contract cancellation, debarment, agency reviews, and potential False Claims Act actions.",
+      "summary": "This section outlines how agencies will enforce the requirements, including guidance from OMB, contract termination, debarment, agency reviews, and potential False Claims Act actions by the Attorney General.",
       "affects": "Federal agencies, contractors, and subcontractors",
-      "children": []
+      "children": [
+        {
+          "name": "OMB Guidance and Agency Actions",
+          "amount": null,
+          "type": "new",
+          "summary": "The OMB Director will issue guidance to ensure compliance, empowering agencies to cancel contracts and suspend or debar non-compliant contractors and subcontractors.",
+          "affects": "Office of Management and Budget, federal contracting agencies, contractors, and subcontractors",
+          "children": []
+        },
+        {
+          "name": "Identification of Risky Economic Sectors",
+          "amount": null,
+          "type": "new",
+          "summary": "OMB, in coordination with other officials, will identify economic sectors at high risk for discriminatory DEI activities and issue further compliance guidance.",
+          "affects": "Office of Management and Budget, Attorney General, Assistant to the President for Domestic Policy, EEOC, and specific economic sectors",
+          "children": []
+        },
+        {
+          "name": "Agency Head Reviews and Reporting",
+          "amount": null,
+          "type": "new",
+          "summary": "Each agency head must review their implementation of the contractor requirements within 120 days and regularly report to the Assistant to the President for Domestic Policy.",
+          "affects": "Heads of executive departments and agencies",
+          "children": []
+        },
+        {
+          "name": "Attorney General Actions",
+          "amount": null,
+          "type": "new",
+          "summary": "The Attorney General will consider bringing False Claims Act actions against violators and ensure prompt review of private False Claims Act lawsuits related to federal contracts.",
+          "affects": "Attorney General, Department of Justice, federal contractors, and private citizens filing False Claims Act lawsuits",
+          "children": []
+        }
+      ]
     },
     {
       "name": "Regulations and Implementation",
       "amount": null,
       "type": "new",
-      "summary": "The Federal Acquisition Regulatory Council (FAR Council) is directed to amend the Federal Acquisition Regulation (FAR) to include the new contract clause and remove conflicting provisions, and to issue interim guidance.",
-      "affects": "Federal Acquisition Regulatory Council, federal agencies, and contractors",
-      "children": []
+      "summary": "The Federal Acquisition Regulatory Council will amend the Federal Acquisition Regulation (FAR) to incorporate the new contract clause and remove conflicting provisions, also issuing interim guidance.",
+      "affects": "Federal Acquisition Regulatory Council, federal agencies, and federal contracting processes",
+      "children": [
+        {
+          "name": "FAR Amendments",
+          "amount": null,
+          "type": "new",
+          "summary": "The FAR Council will amend the Federal Acquisition Regulation to include the new contract clause and remove any conflicting provisions.",
+          "affects": "Federal Acquisition Regulatory Council and federal contracting regulations",
+          "children": []
+        },
+        {
+          "name": "Interim Guidance for Agencies",
+          "amount": null,
+          "type": "new",
+          "summary": "The FAR Council will issue interim guidance within 60 days to help agencies implement the new clause before the full FAR amendments are completed.",
+          "affects": "Federal Acquisition Regulatory Council and federal agencies",
+          "children": []
+        }
+      ]
     },
     {
       "name": "General Provisions",
       "amount": null,
       "type": "neutral",
-      "summary": "This section includes standard legal provisions regarding the severability of the order's parts, non-impairment of agency authority, implementation subject to appropriations, and clarification that the order does not create private rights.",
-      "affects": "All parties involved in interpreting and implementing the order",
-      "children": []
+      "summary": "This section includes standard legal clauses ensuring the order's severability, not impairing existing authorities, being subject to appropriations, and not creating private rights enforceable against the U.S. government, with publication costs borne by the Department of Justice.",
+      "affects": "All parties affected by the Executive Order, and the Department of Justice",
+      "children": [
+        {
+          "name": "Severability",
+          "amount": null,
+          "type": "neutral",
+          "summary": "If any part of this order is found invalid, the remaining provisions and their application will not be affected.",
+          "affects": "Legal interpretation of the Executive Order",
+          "children": []
+        },
+        {
+          "name": "Non-impairment of Authority",
+          "amount": null,
+          "type": "neutral",
+          "summary": "Nothing in the order should be interpreted to diminish the lawful authority of executive departments, agencies, or the Director of OMB.",
+          "affects": "Executive departments, agencies, and the Director of OMB",
+          "children": []
+        },
+        {
+          "name": "Implementation Subject to Law and Appropriations",
+          "amount": null,
+          "type": "neutral",
+          "summary": "The order will be implemented consistent with applicable law and only if funds are available.",
+          "affects": "Federal agencies and the implementation of the Executive Order",
+          "children": []
+        },
+        {
+          "name": "No Private Right of Action",
+          "amount": null,
+          "type": "neutral",
+          "summary": "This order does not create any new legal rights or benefits that individuals or entities can enforce against the U.S. government.",
+          "affects": "Private citizens or entities seeking to challenge the U.S. government",
+          "children": []
+        },
+        {
+          "name": "Cost of Publication",
+          "amount": null,
+          "type": "neutral",
+          "summary": "The Department of Justice will cover the costs associated with publishing this Executive Order.",
+          "affects": "Department of Justice budget",
+          "children": []
+        }
+      ]
     }
   ]
 }
