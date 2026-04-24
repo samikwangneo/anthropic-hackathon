@@ -1,100 +1,73 @@
-import json
 import os
 from typing import Optional
 
-import requests
+from google import genai
+from google.genai import types
 from pydantic import ValidationError
 
 from backend.models import Node
 from backend.prompts import EXPLAIN_SYSTEM_PROMPT, EXTRACTION_SYSTEM_PROMPT
 
-FIREWORKS_URL = "https://api.fireworks.ai/inference/v1/chat/completions"
-MODEL = "accounts/samik-rhb15ufmmp61/deployments/w91e5r2f"
-MAX_TOKENS = 32768
-EXTRACTION_TEMPERATURE = 0.3
-EXPLAIN_TEMPERATURE = 0.6
-REQUEST_TIMEOUT = 300
+MODEL = "gemini-2.5-flash"
 MAX_DEPTH = 4
 EXPLAIN_SPAN_CHARS = 12000
 EXPLAIN_FALLBACK_CHARS = 8000
 
-
-def _get_api_key() -> str:
-    key = os.environ.get("FIREWORKS_API_KEY")
-    if not key:
-        raise RuntimeError(
-            "FIREWORKS_API_KEY is not set. Add it to your .env or shell environment."
-        )
-    return key
+_client: Optional[genai.Client] = None
 
 
-def _call(
-    messages: list[dict],
-    *,
-    temperature: float,
-    json_mode: bool,
-) -> str:
-    payload: dict = {
-        "model": MODEL,
-        "max_tokens": MAX_TOKENS,
-        "top_p": 1,
-        "top_k": 40,
-        "presence_penalty": 0,
-        "frequency_penalty": 0,
-        "temperature": temperature,
-        "messages": messages,
-    }
-    if json_mode:
-        payload["response_format"] = {"type": "json_object"}
-
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {_get_api_key()}",
-    }
-    response = requests.post(
-        FIREWORKS_URL,
-        headers=headers,
-        data=json.dumps(payload),
-        timeout=REQUEST_TIMEOUT,
-    )
-    response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"]
+def _get_client() -> genai.Client:
+    global _client
+    if _client is None:
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            raise RuntimeError(
+                "GEMINI_API_KEY is not set. Add it to your .env or shell environment."
+            )
+        _client = genai.Client(api_key=api_key)
+    return _client
 
 
 def extract_hierarchy(bill_text: str) -> Node:
-    messages = [
-        {"role": "system", "content": EXTRACTION_SYSTEM_PROMPT},
-        {"role": "user", "content": bill_text},
-    ]
-    raw = _call(messages, temperature=EXTRACTION_TEMPERATURE, json_mode=True)
-    node = _parse_or_repair(bill_text, raw)
+    client = _get_client()
+    config = types.GenerateContentConfig(
+        system_instruction=EXTRACTION_SYSTEM_PROMPT,
+        response_mime_type="application/json",
+        response_schema=Node,
+    )
+    response = client.models.generate_content(
+        model=MODEL,
+        contents=bill_text,
+        config=config,
+    )
+    node = _parse_or_repair(client, config, bill_text, response.text)
     _truncate_depth(node)
     return node
 
 
-def _parse_or_repair(bill_text: str, raw_json: str) -> Node:
+def _parse_or_repair(
+    client: genai.Client,
+    config: types.GenerateContentConfig,
+    bill_text: str,
+    raw_json: str,
+) -> Node:
     try:
         return Node.model_validate_json(raw_json)
     except ValidationError as first_error:
-        repair_user_content = (
+        repair_contents = (
             f"The previous JSON you returned failed validation.\n\n"
             f"Validation errors:\n{first_error}\n\n"
             f"The invalid JSON was:\n{raw_json}\n\n"
-            f"Return a corrected JSON object that matches the shape described in the "
-            f"system prompt. Do not include prose, markdown, or code fences. The original "
-            f"document is below.\n\n--- DOCUMENT ---\n{bill_text}"
+            f"The original document is below. Return a corrected JSON object that conforms "
+            f"to the schema. Do not include prose, markdown, or code fences.\n\n"
+            f"--- DOCUMENT ---\n{bill_text}"
         )
-        repair_messages = [
-            {"role": "system", "content": EXTRACTION_SYSTEM_PROMPT},
-            {"role": "user", "content": repair_user_content},
-        ]
-        repaired = _call(
-            repair_messages,
-            temperature=EXTRACTION_TEMPERATURE,
-            json_mode=True,
+        repair = client.models.generate_content(
+            model=MODEL,
+            contents=repair_contents,
+            config=config,
         )
-        return Node.model_validate_json(repaired)
+        return Node.model_validate_json(repair.text)
 
 
 def _truncate_depth(node: Node, depth: int = 1) -> None:
@@ -110,18 +83,24 @@ def explain_section(
 ) -> list[str]:
     span = _locate_span(bill_text, node_path) or _fallback_span(bill_text, node)
 
-    user_content = (
+    contents = (
         f"Section path: {' > '.join(node_path)}\n"
         f"Section summary (from prior analysis): {node.summary}\n"
         f"Who is affected (from prior analysis): {node.affects}\n\n"
         f"--- EXCERPT ---\n{span}"
     )
-    messages = [
-        {"role": "system", "content": EXPLAIN_SYSTEM_PROMPT},
-        {"role": "user", "content": user_content},
-    ]
-    raw = _call(messages, temperature=EXPLAIN_TEMPERATURE, json_mode=False)
-    return [p.strip() for p in raw.split("\n\n") if p.strip()]
+
+    client = _get_client()
+    response = client.models.generate_content(
+        model=MODEL,
+        contents=contents,
+        config=types.GenerateContentConfig(
+            system_instruction=EXPLAIN_SYSTEM_PROMPT,
+        ),
+    )
+
+    paragraphs = [p.strip() for p in response.text.split("\n\n") if p.strip()]
+    return paragraphs
 
 
 def _locate_span(bill_text: str, node_path: list[str]) -> Optional[str]:
