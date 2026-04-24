@@ -36,25 +36,26 @@ SUPPORTED_BILL_SUFFIXES = (".txt", ".pdf")
 # ``list_bills()`` with a placeholder title/description, so dropping a
 # new bill into the bills directory is always non-breaking.
 _BILL_CATALOG: dict[str, BillMeta] = {
-    "22-174_k536": BillMeta(
-        id="22-174_k536",
-        title="Groff v. DeJoy (2023)",
+    "2026-06286": BillMeta(
+        id="2026-06286",
+        title="Executive Order 14398 — Addressing DEI Discrimination by Federal Contractors",
         description=(
-            "Supreme Court opinion clarifying the 'undue hardship' standard "
-            "for religious accommodations under Title VII of the Civil "
-            "Rights Act, arising from a USPS mail carrier's request to "
-            "avoid Sunday deliveries. Non-budget text — exercises the "
-            "clause-count sizing path."
+            "Presidential executive order restricting 'diversity, equity, and "
+            "inclusion' activities by federal contractors under the Federal "
+            "Property and Administrative Services Act. Non-budget directive — "
+            "exercises the clause-count sizing path because most provisions "
+            "lack dollar amounts."
         ),
     ),
-    "23-1141_lkgn": BillMeta(
-        id="23-1141_lkgn",
-        title="Smith & Wesson Brands v. Estados Unidos Mexicanos (2025)",
+    "BILLS-119s3971enr": BillMeta(
+        id="BILLS-119s3971enr",
+        title="S. 3971 — Small Business Innovation and Economic Security Act (119th Congress)",
         description=(
-            "Supreme Court opinion on the Protection of Lawful Commerce in "
-            "Arms Act (PLCAA) and Mexico's suit alleging U.S. firearms "
-            "manufacturers aided and abetted cartel trafficking. Another "
-            "non-budget text ideal for clause-count sizing."
+            "Enrolled Senate bill reauthorizing and reforming the SBIR and "
+            "STTR programs, with new research-security diligence requirements "
+            "targeting foreign-adversary ties. Mixed regulatory and "
+            "program-funding text — shows both budget and clause-count nodes "
+            "in the same sunburst."
         ),
     ),
 }
