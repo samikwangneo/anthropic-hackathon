@@ -61,6 +61,11 @@ _BILL_CATALOG: dict[str, BillMeta] = {
 }
 
 
+def register_bill(bill_id: str, meta: BillMeta) -> None:
+    """Add or overwrite a catalog entry at runtime (used by the upload endpoint)."""
+    _BILL_CATALOG[bill_id] = meta
+
+
 def list_bills() -> list[BillMeta]:
     """Every bill with a source file on disk, catalog entries first."""
     bills: list[BillMeta] = []

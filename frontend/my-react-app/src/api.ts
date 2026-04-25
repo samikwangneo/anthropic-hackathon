@@ -27,4 +27,17 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(req),
     }),
+
+  uploadBill: async (file: File, title?: string, description?: string): Promise<BillMeta> => {
+    const form = new FormData();
+    form.append('file', file);
+    if (title) form.append('title', title);
+    if (description) form.append('description', description);
+    const resp = await fetch(`${API_BASE}/api/bills/upload`, { method: 'POST', body: form });
+    if (!resp.ok) {
+      const detail = await resp.text().catch(() => resp.statusText);
+      throw new Error(`${resp.status} ${resp.statusText}: ${detail}`);
+    }
+    return resp.json() as Promise<BillMeta>;
+  },
 };

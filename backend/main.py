@@ -1,11 +1,21 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI, HTTPException
+import shutil
+from pathlib import Path
+
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.models import BillMeta, ExplainRequest, ExplainResponse, Node
-from backend.bills import list_bills, load_bill_text, load_cached_hierarchy, save_cached_hierarchy
+from backend.bills import (
+    BILLS_DIR,
+    list_bills,
+    load_bill_text,
+    load_cached_hierarchy,
+    register_bill,
+    save_cached_hierarchy,
+)
 from backend.llm import extract_hierarchy, explain_section
 
 app = FastAPI(title="PolicyMap API", version="1.0.0")
@@ -45,3 +55,35 @@ def explain(req: ExplainRequest):
         raise HTTPException(status_code=404, detail=f"Bill '{req.bill_id}' not found")
     paragraphs = explain_section(text, req.node_path, req.node)
     return ExplainResponse(paragraphs=paragraphs)
+
+
+@app.post("/api/bills/upload", response_model=BillMeta)
+def upload_bill(
+    file: UploadFile = File(...),
+    title: str = Form(""),
+    description: str = Form(""),
+):
+    filename = file.filename or "upload"
+    suffix = Path(filename).suffix.lower()
+    if suffix not in (".pdf", ".txt"):
+        raise HTTPException(status_code=400, detail="Only .pdf and .txt files are supported")
+
+    bill_id = Path(filename).stem
+    dest = BILLS_DIR / f"{bill_id}{suffix}"
+    BILLS_DIR.mkdir(parents=True, exist_ok=True)
+    with dest.open("wb") as f_out:
+        shutil.copyfileobj(file.file, f_out)
+
+    effective_title = title.strip() or bill_id.replace("_", " ").replace("-", " ").strip().title()
+    effective_description = description.strip() or "Uploaded document."
+    meta = BillMeta(id=bill_id, title=effective_title, description=effective_description)
+    register_bill(bill_id, meta)
+
+    try:
+        text = load_bill_text(bill_id)
+        node = extract_hierarchy(text)
+        save_cached_hierarchy(bill_id, node)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Hierarchy extraction failed: {exc}")
+
+    return meta

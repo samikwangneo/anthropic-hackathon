@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { BillMeta, Node } from './types';
 import { Sunburst } from './components/Sunburst';
@@ -13,7 +13,29 @@ function App() {
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   const [selectedNode, setSelectedNode] = useState<{ node: Node, path: string[] } | null>(null);
-  const [uploadFlash, setUploadFlash] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!fileInputRef.current) return;
+    fileInputRef.current.value = '';
+    if (!file) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const meta = await api.uploadBill(file);
+      const refreshed = await api.getBills();
+      setBills(refreshed);
+      setSelectedBillId(meta.id);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setUploadError(msg);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     api.getBills()
@@ -101,20 +123,34 @@ function App() {
               selectedId={selectedBillId}
               onSelect={setSelectedBillId}
             />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.txt"
+              className="hidden"
+              onChange={handleFileSelected}
+            />
             <button
               type="button"
-              onClick={() => {
-                setUploadFlash(true);
-                window.setTimeout(() => setUploadFlash(false), 1400);
-              }}
-              title="Upload a new bill (demo only)"
-              className={`group relative h-12 px-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md flex items-center gap-2 text-zinc-200 text-sm font-secondary uppercase tracking-widest font-bold transition-all hover:bg-white/10 hover:border-teal-400/40 hover:text-teal-200 hover:shadow-[0_0_24px_rgba(20,184,166,0.25)] ${uploadFlash ? 'border-teal-400/60 text-teal-200 shadow-[0_0_24px_rgba(20,184,166,0.35)]' : ''}`}
+              disabled={uploading}
+              onClick={() => fileInputRef.current?.click()}
+              title="Upload a bill PDF or TXT to analyze"
+              className={`group relative h-12 px-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md flex items-center gap-2 text-zinc-200 text-sm font-secondary uppercase tracking-widest font-bold transition-all hover:bg-white/10 hover:border-teal-400/40 hover:text-teal-200 hover:shadow-[0_0_24px_rgba(20,184,166,0.25)] disabled:opacity-50 disabled:cursor-not-allowed ${uploading ? 'border-teal-400/60 text-teal-200 shadow-[0_0_24px_rgba(20,184,166,0.35)]' : ''}`}
             >
-              <UploadCloud size={16} className="opacity-80 group-hover:opacity-100" />
-              <span>Upload</span>
-              {uploadFlash && (
-                <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] tracking-widest text-teal-300/90 normal-case">
-                  demo only — connect intake API to enable
+              {uploading ? (
+                <>
+                  <div className="w-4 h-4 rounded-full border-2 border-teal-400 border-t-transparent animate-spin" />
+                  <span>Analyzing…</span>
+                </>
+              ) : (
+                <>
+                  <UploadCloud size={16} className="opacity-80 group-hover:opacity-100" />
+                  <span>Upload</span>
+                </>
+              )}
+              {uploadError && (
+                <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] tracking-widest text-red-400 normal-case max-w-xs truncate">
+                  {uploadError}
                 </span>
               )}
             </button>
