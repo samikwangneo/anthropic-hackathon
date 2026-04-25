@@ -59,7 +59,7 @@ function App() {
           </div>
           <div>
             <h1 className="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">
-              PolicyMap
+              PoliSight
             </h1>
             <p className="text-zinc-500 font-secondary text-xs uppercase tracking-widest font-bold">
               AI Legislation Intelligence
@@ -136,7 +136,7 @@ function App() {
               <LayoutGrid size={64} strokeWidth={1} className="mb-6 text-teal-500/50" />
               <h2 className="text-3xl font-light mb-2">Select a bill to map its impact</h2>
               <p className="text-zinc-400 font-secondary max-w-md">
-                PolicyMap transforms raw legislative text into an interactive, zoomable sunburst detailing policy shifts and budget allocations.
+                PoliSight transforms raw legislative text into an interactive, zoomable sunburst detailing policy shifts and budget allocations.
               </p>
               {bills.length > 0 && (
                 <div className="mt-6 text-xs text-zinc-500 font-secondary uppercase tracking-widest">
