@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { api } from './api';
 import { BillMeta, Node } from './types';
 import { Sunburst } from './components/Sunburst';
-import { Tooltip } from './components/Tooltip';
 import { ExplainerPanel } from './components/ExplainerPanel';
 import { BillPicker } from './components/BillPicker';
-import { LayoutGrid, Layers } from 'lucide-react';
+import { LayoutGrid, Layers, UploadCloud } from 'lucide-react';
 
 function App() {
   const [bills, setBills] = useState<BillMeta[]>([]);
@@ -13,11 +12,8 @@ function App() {
   const [hierarchy, setHierarchy] = useState<Node | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const [hoverNode, setHoverNode] = useState<{ node: Node | null, x: number, y: number }>({
-    node: null, x: 0, y: 0
-  });
-
   const [selectedNode, setSelectedNode] = useState<{ node: Node, path: string[] } | null>(null);
+  const [uploadFlash, setUploadFlash] = useState(false);
 
   useEffect(() => {
     api.getBills()
@@ -99,11 +95,30 @@ function App() {
       <main className="flex-1 relative z-10 flex flex-col">
         {/* Top Controls */}
         <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20 w-full flex justify-center px-4">
-          <BillPicker 
-            bills={bills} 
-            selectedId={selectedBillId} 
-            onSelect={setSelectedBillId} 
-          />
+          <div className="flex items-center gap-3">
+            <BillPicker
+              bills={bills}
+              selectedId={selectedBillId}
+              onSelect={setSelectedBillId}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setUploadFlash(true);
+                window.setTimeout(() => setUploadFlash(false), 1400);
+              }}
+              title="Upload a new bill (demo only)"
+              className={`group relative h-12 px-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md flex items-center gap-2 text-zinc-200 text-sm font-secondary uppercase tracking-widest font-bold transition-all hover:bg-white/10 hover:border-teal-400/40 hover:text-teal-200 hover:shadow-[0_0_24px_rgba(20,184,166,0.25)] ${uploadFlash ? 'border-teal-400/60 text-teal-200 shadow-[0_0_24px_rgba(20,184,166,0.35)]' : ''}`}
+            >
+              <UploadCloud size={16} className="opacity-80 group-hover:opacity-100" />
+              <span>Upload</span>
+              {uploadFlash && (
+                <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] tracking-widest text-teal-300/90 normal-case">
+                  demo only — connect intake API to enable
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Visualization Canvas */}
@@ -152,7 +167,6 @@ function App() {
               <div className="w-full max-h-[700px] max-w-[700px] flex-1 animation-zoom-in">
                 <Sunburst
                   data={hierarchy}
-                  onHover={(node, x, y) => setHoverNode({ node, x, y })}
                   onClick={(node, path) => setSelectedNode({ node, path })}
                 />
               </div>
@@ -162,12 +176,6 @@ function App() {
       </main>
 
       {/* Overlays */}
-      <Tooltip 
-        node={hoverNode.node} 
-        x={hoverNode.x} 
-        y={hoverNode.y} 
-      />
-
       <ExplainerPanel 
         isOpen={!!selectedNode} 
         onClose={() => setSelectedNode(null)}

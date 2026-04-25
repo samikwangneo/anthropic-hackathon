@@ -9,7 +9,7 @@ export interface ExtendedHierarchyRectangularNode<T> extends d3.HierarchyRectang
 
 export interface SunburstProps {
   data: Node;
-  onHover: (node: Node | null, x: number, y: number) => void;
+  onHover?: (node: Node | null, x: number, y: number) => void;
   onClick: (node: Node, path: string[]) => void;
 }
 
@@ -67,6 +67,24 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
       .style('max-width', '100%')
       .style('height', 'auto');
 
+    // Reusable filter defs for hover glow + center vignette.
+    const defs = svg.append('defs');
+    const glow = defs.append('filter')
+      .attr('id', 'arcGlow')
+      .attr('x', '-30%').attr('y', '-30%')
+      .attr('width', '160%').attr('height', '160%');
+    glow.append('feGaussianBlur').attr('stdDeviation', 6).attr('result', 'b');
+    const merge = glow.append('feMerge');
+    merge.append('feMergeNode').attr('in', 'b');
+    merge.append('feMergeNode').attr('in', 'SourceGraphic');
+
+    const centerGrad = defs.append('radialGradient')
+      .attr('id', 'centerGrad')
+      .attr('cx', '50%').attr('cy', '50%').attr('r', '50%');
+    centerGrad.append('stop').attr('offset', '0%').attr('stop-color', 'rgba(20,184,166,0.10)');
+    centerGrad.append('stop').attr('offset', '60%').attr('stop-color', 'rgba(0,0,0,0.55)');
+    centerGrad.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(0,0,0,0.85)');
+
     let currentFocus = root;
 
     const path = svg.append('g')
@@ -74,11 +92,11 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
       .data(root.descendants().slice(1)) // Skip root as it's the center
       .join('path')
       .attr('fill', d => color(d))
-      .attr('fill-opacity', d => arcVisible(d.current || d) ? (d.children ? 0.8 : 0.6) : 0)
+      .attr('fill-opacity', d => arcVisible(d.current || d) ? (d.children ? 0.85 : 0.65) : 0)
       .attr('pointer-events', d => arcVisible(d.current || d) ? 'auto' : 'none')
       .attr('d', d => arc(d.current || d) as string)
       .style('transition', 'fill-opacity 0.2s, stroke 0.2s')
-      .style('stroke', '#fff')
+      .style('stroke', 'rgba(255,255,255,0.45)')
       .style('stroke-width', '0.5px');
 
     path.filter(d => !!d.children)
@@ -92,21 +110,31 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
     // Hover interactions
     path.on('mousemove', (event, d) => {
       d3.select(event.currentTarget as Element)
-        .style('stroke', '#000')
-        .style('stroke-width', '2px')
-        .attr('fill-opacity', 1);
+        .style('stroke', 'rgba(255,255,255,0.95)')
+        .style('stroke-width', '1.5px')
+        .attr('fill-opacity', 1)
+        .attr('filter', 'url(#arcGlow)');
 
       updateCenterText(d, true);
-      onHover(d.data, event.clientX, event.clientY);
+      onHover?.(d.data, event.clientX, event.clientY);
     })
     .on('mouseleave', (event, d) => {
       d3.select(event.currentTarget as Element)
-        .style('stroke', '#fff')
+        .style('stroke', 'rgba(255,255,255,0.45)')
         .style('stroke-width', '0.5px')
-        .attr('fill-opacity', arcVisible(d.current || d) ? (d.children ? 0.8 : 0.6) : 0);
+        .attr('fill-opacity', arcVisible(d.current || d) ? (d.children ? 0.85 : 0.65) : 0)
+        .attr('filter', null);
 
       updateCenterText(currentFocus);
-      onHover(null, 0, 0);
+      onHover?.(null, 0, 0);
+    });
+
+    // Belt-and-braces: clear hover state if cursor leaves the SVG entirely
+    // (covers cases where the mouseleave on a path doesn't fire because the
+    // cursor exits via a gap between arcs).
+    svg.on('mouseleave', () => {
+      updateCenterText(currentFocus);
+      onHover?.(null, 0, 0);
     });
 
     const format = d3.format(',d');
@@ -121,29 +149,48 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
       .data(root.descendants().slice(1))
       .join('text')
       .attr('dy', '0.35em')
-      .attr('fill-opacity', d => +labelVisible(d.current || d))
+      .attr('fill-opacity', d => labelVisible(d.current || d) ? 1 : 0)
       .attr('transform', d => labelTransform(d.current || d))
       .text(d => labelText(d))
-      .style('fill', '#0f172a')
-      .style('font-weight', '600')
+      .style('fill', '#0b1220')
+      .style('font-weight', '700')
       .style('font-family', 'var(--font-primary)')
       .style('font-size', '11px')
+      .style('letter-spacing', '0.01em')
       .style('paint-order', 'stroke')
-      .style('stroke', 'rgba(255,255,255,0.55)')
-      .style('stroke-width', '3px');
+      .style('stroke', 'rgba(255,255,255,0.85)')
+      .style('stroke-width', '3.5px')
+      .style('stroke-linejoin', 'round');
 
-    const parent = svg.append('circle')
+    // Center disc — visually distinct from the inner ring. Click to zoom out.
+    const centerDisc = svg.append('circle')
       .datum(root)
-      .attr('r', radius)
-      .attr('fill', 'rgba(255,255,255,0.02)')
+      .attr('r', radius - 2)
+      .attr('fill', 'url(#centerGrad)')
+      .attr('stroke', 'rgba(255,255,255,0.08)')
+      .attr('stroke-width', 1)
       .attr('pointer-events', 'all')
       .style('cursor', 'pointer')
       .on('click', clicked);
 
-    // Center text — three lines: name (top), category/amount badge, plain-language summary.
+    // Type-color ring around the center disc, updates with focus.
+    const centerRing = svg.append('circle')
+      .attr('r', radius - 2)
+      .attr('fill', 'none')
+      .attr('stroke', 'transparent')
+      .attr('stroke-width', 2)
+      .attr('pointer-events', 'none')
+      .style('opacity', 0.45);
+
+    // The original transparent click-catcher is kept as `parent` for the
+    // existing zoom-out-on-click semantics, retargeted to whatever the
+    // current focus's parent is.
+    const parent = centerDisc;
+
+    // Center text stack: name (top), badge (mid), summary (4 lines), affects (bottom).
     const centerName = svg.append('text')
       .attr('text-anchor', 'middle')
-      .attr('dy', '-1.6em')
+      .attr('dy', '-2.4em')
       .style('pointer-events', 'none')
       .style('font-family', 'var(--font-primary)')
       .style('fill', 'rgb(244 244 245)')
@@ -152,7 +199,7 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
 
     const centerBadge = svg.append('text')
       .attr('text-anchor', 'middle')
-      .attr('dy', '-0.1em')
+      .attr('dy', '-0.95em')
       .style('pointer-events', 'none')
       .style('font-family', 'var(--font-secondary)')
       .style('text-transform', 'uppercase')
@@ -160,21 +207,40 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
       .style('font-size', '10px')
       .style('font-weight', '700');
 
-    // Summary wraps onto multiple lines (up to 4).
     const centerSummary = svg.append('g')
+      .style('pointer-events', 'none');
+
+    const centerAffects = svg.append('g')
       .style('pointer-events', 'none');
 
     function setSummaryLines(text: string) {
       centerSummary.selectAll('text').remove();
-      const lines = wrapLines(text, 28, 4);
-      const startDy = 1.3;
+      const lines = wrapLines(text, 28, 3);
+      const startDy = 0.55;
       lines.forEach((line, i) => {
         centerSummary.append('text')
           .attr('text-anchor', 'middle')
           .attr('dy', `${startDy + i * 1.15}em`)
           .style('font-family', 'var(--font-secondary)')
-          .style('fill', 'rgba(228, 228, 231, 0.75)')
+          .style('fill', 'rgba(228, 228, 231, 0.78)')
           .style('font-size', '11px')
+          .text(line);
+      });
+    }
+
+    function setAffectsLine(text: string | undefined) {
+      centerAffects.selectAll('text').remove();
+      if (!text) return;
+      const lines = wrapLines(`Affects: ${text}`, 30, 2);
+      const startDy = 4.55;
+      lines.forEach((line, i) => {
+        centerAffects.append('text')
+          .attr('text-anchor', 'middle')
+          .attr('dy', `${startDy + i * 1.1}em`)
+          .style('font-family', 'var(--font-secondary)')
+          .style('fill', 'rgba(148,163,184,0.85)')
+          .style('font-size', '10px')
+          .style('font-style', i === 0 ? 'normal' : 'normal')
           .text(line);
       });
     }
@@ -202,7 +268,12 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
         : `${badgePrefix}${typeLabel}`;
       centerBadge.text(badgeText).style('fill', typeColor);
 
+      centerRing
+        .attr('stroke', typeColor)
+        .style('opacity', hovering ? 0.85 : 0.45);
+
       setSummaryLines(p.data.summary || '');
+      setAffectsLine(p.data.affects);
     }
 
     updateCenterText(root);
@@ -211,16 +282,32 @@ export const Sunburst: React.FC<SunburstProps> = ({ data, onHover, onClick }) =>
       return d.y1 <= 4 && d.y0 >= 1 && d.x1 > d.x0;
     }
 
+    // Pixel dimensions of the arc cell, used for both label placement and
+    // truncation. Labels are radial (read outward), so the *radial* extent
+    // bounds string length while the *tangential* extent bounds line height.
+    function arcDims(d: any) {
+      const angularExtent = d.x1 - d.x0;
+      const yMid = (d.y0 + d.y1) / 2;
+      return {
+        radialPx: (d.y1 - d.y0) * radius,
+        tangentialPx: angularExtent * yMid * radius,
+      };
+    }
+
     function labelVisible(d: any) {
-      return d.y1 <= 4 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
+      if (d.y1 > 4 || d.y0 < 1) return false;
+      const { radialPx, tangentialPx } = arcDims(d);
+      return tangentialPx >= 14 && radialPx >= 28;
     }
 
     function labelText(d: d3.HierarchyRectangularNode<Node>) {
-      // Tighter labels for inner rings, more room for outer rings.
-      const angularSpan = d.x1 - d.x0;
-      const maxChars = Math.max(8, Math.floor(angularSpan * 24));
+      const { radialPx } = arcDims(d);
+      // ~6.5px per character at 11px font; reserve 16px of arc padding.
+      const maxChars = Math.max(3, Math.floor((radialPx - 16) / 6.5));
       const name = d.data.name;
-      return name.length > maxChars ? name.slice(0, maxChars - 1) + '…' : name;
+      if (name.length <= maxChars) return name;
+      if (maxChars <= 1) return '…';
+      return name.slice(0, maxChars - 1).trimEnd() + '…';
     }
 
     function labelTransform(d: any) {
